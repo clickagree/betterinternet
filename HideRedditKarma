@@ -1,0 +1,37 @@
+// ==UserScript==
+// @name         Reddit Karma Hider
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Hide karma elements on Reddit for a healthier browsing experience
+// @author       github.com/clickagree
+// @match        *://www.reddit.com/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function hideKarmaElements() {
+        const selectors = [
+            '.Rz5N3cHNgTGZsIQJqBfgk > span',
+            '.icon-karma_fill.icon._2wYneOcJEB6o4mj1NedmsR',
+            '#profile--id-card--highlight-tooltip--karma',
+            '._3odBTM7RqvRgN1nvkf5k8B > div._2fN55zgax6VM7DyEl9pOmM > ._26kBTuLE_sSZzRBwU7HLij',
+            '._3odBTM7RqvRgN1nvkf5k8B > div._2fN55zgax6VM7DyEl9pOmM > ._3KNaG9-PoXf4gcuy5_RCVy',
+            '._3_GZIIN1xcMEC5AVuv4kfa._2ETuFsVzMBxiHia6HfJCTQ',
+            '._1E9mcoVn4MYnuBQSVDt1gC'
+        ];
+
+        selectors.forEach(selector => {
+            let elements = document.querySelectorAll(selector);
+            elements.forEach(el => el.style.display = 'none');
+        });
+    }
+
+    
+    hideKarmaElements();
+
+    
+    const observer = new MutationObserver(hideKarmaElements);
+    observer.observe(document, { childList: true, subtree: true });
+})();
