@@ -1,0 +1,50 @@
+// ==UserScript==
+// @name         Delete The Middle East Conflict
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Delete the middle east conflict from your internet
+// @author       github.com/clickagree
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function hideWordsAndEmojis(rootNode) {
+        const wordsToHide = ["free palestine", "palestine", "palestinian", "idf", "hamas", "gaza", "occupation"]; // add more!
+        const emojisToHide = ["🇵🇸"]; 
+        const regexPattern = '(' + wordsToHide.join('|') + '|' + emojisToHide.join('|') + ')';
+        const regex = new RegExp(regexPattern, 'gi');
+
+        function traverseNodes(node) {
+            if (node.nodeType === 3) { 
+                const text = node.nodeValue;
+                const replacedText = text.replace(regex, '');
+
+                if (replacedText !== text) {
+                    node.nodeValue = replacedText;
+                }
+            } else if (node.nodeType === 1 && node.nodeName !== "SCRIPT" && node.nodeName !== "STYLE") { 
+                Array.from(node.childNodes).forEach(traverseNodes);
+            }
+        }
+
+        traverseNodes(rootNode);
+    }
+
+    
+    function observeDOMChanges() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(hideWordsAndEmojis);
+            });
+        });
+
+        const config = { childList: true, subtree: true };
+        observer.observe(document.body, config);
+    }
+
+    hideWordsAndEmojis(document.body);
+    observeDOMChanges();
+})();
